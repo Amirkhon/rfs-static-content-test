@@ -1,0 +1,293 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Electron Kicksharing - OpenAPI 3.0",
+    "contact": {
+      "email": "amirkhon.bahodurov@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.2"
+  },
+  "servers": [
+    {
+      "url": "https://api.kicksharing.electron.tj"
+    }
+  ],
+  "tags": [
+    {
+      "name": "pg",
+      "description": "Payment Gateway"
+    }
+  ],
+  "paths": {
+    "/pg/callback": {
+      "post": {
+        "tags": [
+          "pg"
+        ],
+        "summary": "Send status of the payment",
+        "description": "Send status of the payment",
+        "operationId": "paymentCallback",
+        "requestBody": {
+          "description": "Transaction details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transaction"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "200.001"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid transaction details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Invalid request body",
+                        "phoneNumber attribute is missed",
+                        "amount attributes is missed",
+                        "timestamp attributes is missed",
+                        "transactionId attribute is missed",
+                        "invalid amount"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "400.001",
+                        "400.002",
+                        "400.003",
+                        "400.004",
+                        "400.005",
+                        "400.005"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User with phone number is not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "user not found"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "404.001"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Internal server error"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "500.001"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    },
+    "/pg/checkUser": {
+      "get": {
+        "tags": [
+          "pg"
+        ],
+        "summary": "Check user by phone number",
+        "description": "Check if a user with the provided phone number exists",
+        "operationId": "checkUser",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "phoneNumber",
+            "schema": {
+              "type": "string"
+            },
+            "example": 922222222
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "User exists."
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "200.001"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "Invalid or missed phone number"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "400.001"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "enum": [
+                        "user not found"
+                      ]
+                    },
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "404.001"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Transaction": {
+        "required": [
+          "phoneNumber",
+          "amount",
+          "timestamp",
+          "transactionId"
+        ],
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "type": "string",
+            "example": 922222222
+          },
+          "amount": {
+            "type": "number",
+            "example": 10
+          },
+          "timestamp": {
+            "type": "number",
+            "example": 1718105771
+          },
+          "transactionId": {
+            "type": "string",
+            "example": 13545
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    }
+  }
+}
